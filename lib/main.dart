@@ -5,6 +5,7 @@ final helloWorldProvider = Provider((_) => 'Hello World!');
 
 void main() {
   runApp(
+    // Providerを読むためにはアプリケーション全体をProviderScopeでwrapする
     ProviderScope(
       child: MyApp(),
     ),
@@ -22,7 +23,9 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: Text('Riverpod Example')),
         body: Center(
+          // Providerを使うにはConsumerを使う
           child: Consumer((context, read) {
+            // helloWorldProviderを読む
             final value = read(helloWorldProvider);
             return Text(value);
           }),
