@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final helloWorldProvider = Provider((_) => 'Hello World!');
+// グローバル変数でProviderを宣言
+final counterProvider = StateProvider((_) => 0);
 
 void main() {
   runApp(
@@ -21,14 +22,22 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        appBar: AppBar(title: Text('Riverpod Example')),
+        appBar: AppBar(title: Text('Counter Example')),
         body: Center(
           // Providerを使うにはConsumerを使う
-          child: Consumer((context, read) {
-            // helloWorldProviderを読む
-            final value = read(helloWorldProvider);
-            return Text(value);
-          }),
+          // hooks_riverpodのみuseProviderも使える
+          child: Consumer(
+            (context, read) {
+              // helloWorldProviderを読む
+              final count = read(counterProvider).state;
+              return Text('$count');
+            },
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          // read(context)を使うことで値が変更されてもFABがrebuildされない
+          onPressed: () => counterProvider.read(context).state++,
+          child: const Icon(Icons.add),
         ),
       ),
     );
