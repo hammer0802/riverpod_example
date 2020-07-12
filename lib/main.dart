@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           // hooks_riverpodのみuseProviderも使える
           child: Consumer(
             (context, read) {
-              // helloWorldProviderを読む
+              // counterProviderを読む
               final count = read(counterProvider).state;
               return Text('$count');
             },
