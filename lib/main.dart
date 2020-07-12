@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // グローバル変数でProviderを宣言
-final counterProvider = StateProvider((_) => 0);
+final firstNameProvider = StateProvider((ref) => 'Mona');
+final lastNameProvider = StateProvider((ref) => 'Lisa');
+
+// Computedを使ってイニシャルを返すproviderを宣言
+// 例えばfirstNameがMariaに変更され、firstNameが変わるがinitialsが変わらない場合、
+// Computedを使うことでinitialsを使うWidgetはrebuildされない(buildの最適化)
+final Computed initialsProvider = Computed((read) {
+  final firstName = read(firstNameProvider).state;
+  final lastName = read(lastNameProvider).state;
+
+  return '${firstName[0]}${lastName[0]}';
+});
 
 void main() {
   runApp(
@@ -22,22 +33,20 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        appBar: AppBar(title: Text('Counter Example')),
+        appBar: AppBar(title: Text('Computed Example')),
         body: Center(
           // Providerを使うにはConsumerを使う
-          // hooks_riverpodのみuseProviderも使える
           child: Consumer(
             (context, read) {
-              // helloWorldProviderを読む
-              final count = read(counterProvider).state;
-              return Text('$count');
+              final initials = read(initialsProvider);
+              return Text(initials);
             },
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          // read(context)を使うことで値が変更されてもFABがrebuildされない
-          onPressed: () => counterProvider.read(context).state++,
-          child: const Icon(Icons.add),
+          // initialsの状態は変更ないため、ConsumerのTextはrebuildされない
+          onPressed: () => firstNameProvider.read(context).state = 'Maria',
+          child: const Icon(Icons.check),
         ),
       ),
     );
