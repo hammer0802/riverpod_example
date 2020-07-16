@@ -16,6 +16,11 @@ class HomeScreen extends StatelessWidget {
     String _newTaskTitle = '';
     final _textEditingController = TextEditingController();
 
+    void _clearTextField() {
+      _textEditingController.clear();
+      _newTaskTitle = '';
+    }
+
     return MaterialApp(
       home: Scaffold(
         body: Consumer(
@@ -50,7 +55,9 @@ class HomeScreen extends StatelessWidget {
                             decoration: InputDecoration(
                               hintText: "Enter a todo title",
                               suffixIcon: IconButton(
-                                onPressed: () => _textEditingController.clear(),
+                                onPressed: () {
+                                  _clearTextField();
+                                },
                                 icon: Icon(Icons.clear),
                               ),
                             ),
@@ -63,8 +70,7 @@ class HomeScreen extends StatelessWidget {
                                 _newTaskTitle = 'No Title';
                               }
                               taskList.addTask(_newTaskTitle);
-                              _textEditingController.clear();
-                              _newTaskTitle = '';
+                              _clearTextField();
                             },
                           ),
                         ),
@@ -89,7 +95,7 @@ class HomeScreen extends StatelessWidget {
                             scaffoldState.removeCurrentSnackBar();
                             taskList.deleteTask(task);
                             final snackBar = SnackBar(
-                              content: Text('${task.title} has been deleted'),
+                              content: Text('${task.title} has been deleted.'),
                               action: SnackBarAction(
                                 label: 'restore',
                                 onPressed: () {
