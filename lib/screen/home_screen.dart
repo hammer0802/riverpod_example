@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpodexample/data/task.dart';
+import 'package:riverpodexample/data/task_list.dart';
 import 'package:riverpodexample/widget/task_tile.dart';
 
 final StateNotifierProvider<TaskList> taskListProvider =
