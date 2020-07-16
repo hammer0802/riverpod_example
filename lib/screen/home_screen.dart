@@ -120,63 +120,92 @@ class HomeScreen extends StatelessWidget {
                             },
                           ),
                         ),
-                        Material(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Wrap(
-                                children: [],
-                              ),
-                              Expanded(
-                                  child: Text(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
                                 '${read(isNotDoneTasksCount)} tasks left',
-                              )),
-                              InkWell(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text('All'),
-                                ),
-                                onTap: () => filter.state = Filter.all,
                               ),
-                              InkWell(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text('Active'),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text('All'),
+                                  ),
+                                  onTap: () => filter.state = Filter.all,
                                 ),
-                                onTap: () => filter.state = Filter.active,
-                              ),
-                              InkWell(
-                                onTap: () => filter.state = Filter.done,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text('Done'),
+                                InkWell(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text('Active'),
+                                  ),
+                                  onTap: () => filter.state = Filter.active,
                                 ),
-                              ),
-                              InkWell(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    'Delete All',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                InkWell(
+                                  onTap: () => filter.state = Filter.done,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text('Done'),
                                   ),
                                 ),
-                                onTap: () {
-                                  if (allTasks.isNotEmpty) {
-                                    taskList.deleteAllTasks();
-                                    showSnackBar(
-                                      previousTasks: allTasks,
-                                      taskList: taskList,
-                                      content: 'All tasks have been deleted.',
-                                      scaffoldState: Scaffold.of(context),
-                                    );
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
+                                InkWell(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      'Delete Done',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    final doneTasks = allTasks
+                                        .where((task) => task.isDone)
+                                        .toList();
+                                    if (doneTasks.isNotEmpty) {
+                                      taskList.deleteDoneTasks();
+                                      showSnackBar(
+                                        previousTasks: allTasks,
+                                        taskList: taskList,
+                                        content:
+                                            'Done tasks have been deleted.',
+                                        scaffoldState: Scaffold.of(context),
+                                      );
+                                    }
+                                  },
+                                ),
+                                InkWell(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      'Delete All',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    if (allTasks.isNotEmpty) {
+                                      taskList.deleteAllTasks();
+                                      showSnackBar(
+                                        previousTasks: allTasks,
+                                        taskList: taskList,
+                                        content: 'All tasks have been deleted.',
+                                        scaffoldState: Scaffold.of(context),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ],
                     ),
