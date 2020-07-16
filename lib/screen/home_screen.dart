@@ -16,9 +16,30 @@ class HomeScreen extends StatelessWidget {
     String _newTaskTitle = '';
     final _textEditingController = TextEditingController();
 
-    void _clearTextField() {
+    void clearTextField() {
       _textEditingController.clear();
       _newTaskTitle = '';
+    }
+
+    void showSnackBar({
+      List<Task> previousTasks,
+      TaskList taskList,
+      String content,
+      ScaffoldState scaffoldState,
+    }) {
+      scaffoldState.removeCurrentSnackBar();
+      final snackBar = SnackBar(
+        content: Text(content),
+        action: SnackBarAction(
+          label: 'restore',
+          onPressed: () {
+            taskList.updateTasks(previousTasks);
+            scaffoldState.removeCurrentSnackBar();
+          },
+        ),
+        duration: Duration(seconds: 3),
+      );
+      scaffoldState.showSnackBar(snackBar);
     }
 
     return MaterialApp(
@@ -56,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                               hintText: "Enter a todo title",
                               suffixIcon: IconButton(
                                 onPressed: () {
-                                  _clearTextField();
+                                  clearTextField();
                                 },
                                 icon: Icon(Icons.clear),
                               ),
@@ -70,11 +91,28 @@ class HomeScreen extends StatelessWidget {
                                 _newTaskTitle = 'No Title';
                               }
                               taskList.addTask(_newTaskTitle);
-                              _clearTextField();
+                              clearTextField();
                             },
                           ),
                         ),
-                        Text('${read(isNotDoneTasksCount)} tasks left'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text('${read(isNotDoneTasksCount)} tasks left'),
+                            FlatButton(
+                              child: Text('Delete All'),
+                              onPressed: () {
+                                taskList.deleteAllTasks();
+                                showSnackBar(
+                                  previousTasks: tasks,
+                                  taskList: taskList,
+                                  content: 'All tasks have been deleted.',
+                                  scaffoldState: Scaffold.of(context),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -89,23 +127,13 @@ class HomeScreen extends StatelessWidget {
                             taskList.toggleDone(task.id);
                           },
                           longPressCallback: () {
-                            final scaffoldState = Scaffold.of(context);
-                            final previousTasks = tasks;
-
-                            scaffoldState.removeCurrentSnackBar();
                             taskList.deleteTask(task);
-                            final snackBar = SnackBar(
-                              content: Text('${task.title} has been deleted.'),
-                              action: SnackBarAction(
-                                label: 'restore',
-                                onPressed: () {
-                                  taskList.updateTasks(previousTasks);
-                                  scaffoldState.removeCurrentSnackBar();
-                                },
-                              ),
-                              duration: Duration(seconds: 3),
+                            showSnackBar(
+                              previousTasks: tasks,
+                              taskList: taskList,
+                              content: '${task.title} has been deleted.',
+                              scaffoldState: Scaffold.of(context),
                             );
-                            scaffoldState.showSnackBar(snackBar);
                           },
                         );
                       },
