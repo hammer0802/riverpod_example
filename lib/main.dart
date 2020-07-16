@@ -90,7 +90,20 @@ class MyApp extends StatelessWidget {
                             taskList.toggleDone(task.id);
                           },
                           longPressCallback: () {
+                            final previousTasks = tasks;
                             taskList.deleteTask(task);
+                            final snackBar = SnackBar(
+                              content: Text('${task.title} has been deleted'),
+                              action: SnackBarAction(
+                                label: 'restore',
+                                onPressed: () {
+                                  taskList.updateTasks(previousTasks);
+                                  Scaffold.of(context).removeCurrentSnackBar();
+                                },
+                              ),
+                              duration: Duration(seconds: 3),
+                            );
+                            Scaffold.of(context).showSnackBar(snackBar);
                           },
                         );
                       },

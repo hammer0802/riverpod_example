@@ -37,4 +37,8 @@ class TaskList extends StateNotifier<List<Task>> {
   void deleteTask(Task target) {
     state = state.where((task) => task.id != target.id).toList();
   }
+
+  void updateTasks(List<Task> newTasks) {
+    state = [for (final task in newTasks) task];
+  }
 }
