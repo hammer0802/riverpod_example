@@ -10,6 +10,29 @@ final Computed isNotDoneTasksCount = Computed((read) {
   return read(taskListProvider.state).where((task) => !task.isDone).length;
 });
 
+enum Filter {
+  all,
+  active,
+  done,
+}
+
+final filterProvider = StateProvider((ref) => Filter.all);
+
+final Computed<List<Task>> filteredTasks = Computed((read) {
+  final filter = read(filterProvider);
+  final tasks = read(taskListProvider.state);
+
+  switch (filter.state) {
+    case Filter.done:
+      return tasks.where((task) => task.isDone).toList();
+    case Filter.active:
+      return tasks.where((task) => !task.isDone).toList();
+    case Filter.all:
+    default:
+      return tasks;
+  }
+});
+
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -47,7 +70,9 @@ class HomeScreen extends StatelessWidget {
         body: Consumer(
           (context, read) {
             final taskList = read(taskListProvider);
-            final tasks = read(taskListProvider.state);
+            final allTasks = read(taskListProvider.state);
+            final displayedTasks = read(filteredTasks);
+            final filter = read(filterProvider);
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -95,23 +120,63 @@ class HomeScreen extends StatelessWidget {
                             },
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text('${read(isNotDoneTasksCount)} tasks left'),
-                            FlatButton(
-                              child: Text('Delete All'),
-                              onPressed: () {
-                                taskList.deleteAllTasks();
-                                showSnackBar(
-                                  previousTasks: tasks,
-                                  taskList: taskList,
-                                  content: 'All tasks have been deleted.',
-                                  scaffoldState: Scaffold.of(context),
-                                );
-                              },
-                            ),
-                          ],
+                        Material(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Wrap(
+                                children: [],
+                              ),
+                              Expanded(
+                                  child: Text(
+                                '${read(isNotDoneTasksCount)} tasks left',
+                              )),
+                              InkWell(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text('All'),
+                                ),
+                                onTap: () => filter.state = Filter.all,
+                              ),
+                              InkWell(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text('Active'),
+                                ),
+                                onTap: () => filter.state = Filter.active,
+                              ),
+                              InkWell(
+                                onTap: () => filter.state = Filter.done,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text('Done'),
+                                ),
+                              ),
+                              InkWell(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    'Delete All',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                onTap: () {
+                                  if (allTasks.isNotEmpty) {
+                                    taskList.deleteAllTasks();
+                                    showSnackBar(
+                                      previousTasks: allTasks,
+                                      taskList: taskList,
+                                      content: 'All tasks have been deleted.',
+                                      scaffoldState: Scaffold.of(context),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -119,7 +184,7 @@ class HomeScreen extends StatelessWidget {
                   Expanded(
                     child: ListView.builder(
                       itemBuilder: (context, index) {
-                        final task = tasks[index];
+                        final task = displayedTasks[index];
                         return TaskTile(
                           taskTitle: task.title,
                           isChecked: task.isDone,
@@ -129,7 +194,7 @@ class HomeScreen extends StatelessWidget {
                           longPressCallback: () {
                             taskList.deleteTask(task);
                             showSnackBar(
-                              previousTasks: tasks,
+                              previousTasks: displayedTasks,
                               taskList: taskList,
                               content: '${task.title} has been deleted.',
                               scaffoldState: Scaffold.of(context),
@@ -137,7 +202,7 @@ class HomeScreen extends StatelessWidget {
                           },
                         );
                       },
-                      itemCount: taskList.taskCount,
+                      itemCount: displayedTasks.length,
                     ),
                   ),
                 ],
