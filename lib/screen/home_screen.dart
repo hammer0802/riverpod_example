@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpodexample/data/task.dart';
 import 'package:riverpodexample/widget/task_tile.dart';
 
-final taskListProvider =
+final StateNotifierProvider<TaskList> taskListProvider =
     StateNotifierProvider((ref) => TaskList([Task(title: 'play tennis')]));
 
-final Computed isNotDoneTasksCount = Computed((read) {
+final Computed<int> isNotDoneTasksCount = Computed((read) {
   return read(taskListProvider.state).where((task) => !task.isDone).length;
 });
 
@@ -16,7 +16,7 @@ enum Filter {
   done,
 }
 
-final filterProvider = StateProvider((ref) => Filter.all);
+final StateProvider<Filter> filterProvider = StateProvider((ref) => Filter.all);
 
 final Computed<List<Task>> filteredTasks = Computed((read) {
   final filter = read(filterProvider);
@@ -36,7 +36,7 @@ final Computed<List<Task>> filteredTasks = Computed((read) {
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    String _newTaskTitle = '';
+    var _newTaskTitle = '';
     final _textEditingController = TextEditingController();
 
     void clearTextField() {
@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
             scaffoldState.removeCurrentSnackBar();
           },
         ),
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
       scaffoldState.showSnackBar(snackBar);
     }
@@ -78,7 +78,7 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.only(top: 50),
+                    padding: const EdgeInsets.only(top: 50),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -99,11 +99,9 @@ class HomeScreen extends StatelessWidget {
                           child: TextField(
                             controller: _textEditingController,
                             decoration: InputDecoration(
-                              hintText: "Enter a todo title",
+                              hintText: 'Enter a todo title',
                               suffixIcon: IconButton(
-                                onPressed: () {
-                                  clearTextField();
-                                },
+                                onPressed: clearTextField,
                                 icon: Icon(Icons.clear),
                               ),
                             ),
@@ -124,7 +122,7 @@ class HomeScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8),
                               child: Text(
                                 '${read(isNotDoneTasksCount)} tasks left',
                               ),
@@ -133,23 +131,23 @@ class HomeScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 InkWell(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8),
                                     child: Text('All'),
                                   ),
                                   onTap: () => filter.state = Filter.all,
                                 ),
                                 InkWell(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8),
                                     child: Text('Active'),
                                   ),
                                   onTap: () => filter.state = Filter.active,
                                 ),
                                 InkWell(
                                   onTap: () => filter.state = Filter.done,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8),
                                     child: Text('Done'),
                                   ),
                                 ),
