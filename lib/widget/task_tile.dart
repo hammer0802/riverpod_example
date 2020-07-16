@@ -17,14 +17,14 @@ class TaskTile extends StatelessWidget {
     return Material(
       color: Colors.white,
       elevation: 4,
-      child: ListTile(
+      child: GestureDetector(
         onLongPress: longPressCallback,
-        title: Text(
-          taskTitle,
-          style: TextStyle(
-              decoration: isChecked ? TextDecoration.lineThrough : null),
-        ),
-        trailing: Checkbox(
+        child: CheckboxListTile(
+          title: Text(
+            taskTitle,
+            style: TextStyle(
+                decoration: isChecked ? TextDecoration.lineThrough : null),
+          ),
           value: isChecked,
           activeColor: Colors.lightBlueAccent,
           onChanged: checkboxCallback,
