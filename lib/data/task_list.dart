@@ -1,5 +1,8 @@
 import 'package:riverpodexample/data/task.dart';
 import 'package:state_notifier/state_notifier.dart';
+import 'package:uuid/uuid.dart';
+
+var _uuid = Uuid();
 
 class TaskList extends StateNotifier<List<Task>> {
   TaskList([List<Task> initialTask]) : super(initialTask ?? []);
@@ -7,16 +10,13 @@ class TaskList extends StateNotifier<List<Task>> {
   int get taskCount => state.length;
 
   void addTask(String title) {
-    state = [...state, Task(title: title)];
+    state = [...state, Task(title: title, id: _uuid.v4())];
   }
 
   void toggleDone(String id) {
     state = [
       for (final task in state)
-        if (task.id == id)
-          Task(id: task.id, title: task.title, isDone: !task.isDone)
-        else
-          task
+        if (task.id == id) task.copyWith(isDone: !task.isDone) else task
     ];
   }
 
