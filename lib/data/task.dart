@@ -1,15 +1,12 @@
-import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'task.freezed.dart';
 
-var _uuid = Uuid();
-
-class Task {
-  Task({
-    this.title,
-    this.isDone = false,
+@freezed
+abstract class Task with _$Task {
+  const factory Task({
+    String title,
+    @Default(false) bool isDone,
     String id,
-  }) : id = id ?? _uuid.v4();
-
-  final String id;
-  final String title;
-  final bool isDone;
+  }) = _Task;
 }
