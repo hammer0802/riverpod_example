@@ -4,8 +4,6 @@ import 'package:state_notifier/state_notifier.dart';
 class TaskList extends StateNotifier<List<Task>> {
   TaskList([List<Task> initialTask]) : super(initialTask ?? []);
 
-  int get taskCount => state.length;
-
   void addTask(String title) {
     state = [...state, Task(title: title)];
   }
