@@ -4,8 +4,8 @@ import 'package:riverpodexample/data/task.dart';
 import 'package:riverpodexample/data/task_list.dart';
 import 'package:riverpodexample/widget/task_tile.dart';
 
-final StateNotifierProvider<TaskList> taskListProvider =
-    StateNotifierProvider((ref) => TaskList([Task(title: 'play tennis')]));
+final StateNotifierProvider<TaskList> taskListProvider = StateNotifierProvider(
+    (ref) => TaskList([const Task(title: 'play tennis')]));
 
 final Computed<int> isNotDoneTasksCount = Computed((read) {
   return read(taskListProvider.state).where((task) => !task.isDone).length;
